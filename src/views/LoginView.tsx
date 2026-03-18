@@ -12,7 +12,7 @@ function LoginView() {
 
     const callProtected = async () => {
       const token = await getAccessTokenSilently();
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/protected`, {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
     };
