@@ -26,7 +26,7 @@ function LoginView() {
       <ChatRound />
 
       {!isAuthenticated ? (
-        <GoogleSignInButton onClick={() => loginWithRedirect()} />
+        <GoogleSignInButton onClick={() => loginWithRedirect({ authorizationParams: { connection: "google-oauth2" } })} />
       ) : (
         <>
             <p>Logged in as: {user?.email}</p>
