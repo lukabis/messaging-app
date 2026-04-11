@@ -36,7 +36,7 @@ function OnboardingView() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ firstName, lastName, username }),
+        body: JSON.stringify({ firstName, lastName, username, onboarded: true }),
       });
       
       if (res.ok) {
