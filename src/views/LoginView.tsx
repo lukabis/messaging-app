@@ -6,7 +6,7 @@ import GoogleSignInButton from '../components/google-sign-in-button/google-sign-
 import { useAuth0 } from "@auth0/auth0-react";
 
 function LoginView() {
-  const { loginWithRedirect, logout, isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +18,8 @@ function LoginView() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (!data.onboarded) navigate("/onboarding");
+      if (data.onboarded) navigate("/home");
+      else navigate("/onboarding");
     };
 
     callProtected();
@@ -29,21 +30,7 @@ function LoginView() {
       <img src={logo} alt="Logo" className='mx-auto mt-8' />
       <ChatRound />
 
-      {!isAuthenticated ? (
-        <GoogleSignInButton onClick={() => loginWithRedirect({ authorizationParams: { connection: "google-oauth2" } })} />
-      ) : (
-        <>
-            <p>Logged in as: {user?.email}</p>
-            <button
-                onClick={() =>
-                  logout({ logoutParams: { returnTo: window.location.origin } })
-                }
-                className="mt-4 px-4 py-2 rounded bg-gray-700 text-white"
-            >
-                Logout
-            </button>
-          </>
-      )}
+      <GoogleSignInButton onClick={() => loginWithRedirect({ authorizationParams: { connection: "google-oauth2" } })} />
     </div>
   );
 }

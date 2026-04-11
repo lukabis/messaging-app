@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginView from "./views/LoginView";
 import OnboardingView from "./views/OnboardingView";
+import HomeView from "./views/HomeView";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
           <Route path="/" element={<LoginView />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/onboarding" element={<OnboardingView />} />
+            <Route path="/home" element={<HomeView />} />
           </Route>
         </Routes>
       </div>
