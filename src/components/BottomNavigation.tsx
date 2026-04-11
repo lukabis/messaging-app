@@ -78,7 +78,7 @@ function BottomNavigation() {
         </button>
         <div className="relative">
           {moreMenuOpen && (
-            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#1a2a3e] rounded-xl shadow-lg overflow-hidden z-20 border border-[#2a3a4e] min-w-40">
+            <div className="absolute bottom-full mb-2 right-0 bg-[#1a2a3e] rounded-xl shadow-lg overflow-hidden z-20 border border-[#2a3a4e] min-w-40">
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 w-full px-4 py-3 text-white text-sm hover:bg-[#2a3a4e] transition-colors"
