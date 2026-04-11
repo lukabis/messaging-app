@@ -64,8 +64,8 @@ function AppHeader() {
   };
 
   return (
-    <header className="bg-[#135caf] px-4 pt-4 pb-2 relative h-[110px] flex flex-col">
-      <div className="flex items-center justify-between mt-auto mb-4">
+    <header className="bg-[#135caf] px-4 pt-4 pb-2 relative flex flex-col">
+      <div className="flex items-center justify-between mt-auto">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <img src={logo} alt="E-Chat logo" className="w-[92px] h-[50px] object-contain" />
