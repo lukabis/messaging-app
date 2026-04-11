@@ -21,11 +21,11 @@ export default function GoogleSignInButton({
         className={[
           "h-12 px-6 rounded-full mt-auto mb-20",
           // look (blue pill)
-          "bg-sky-500 text-slate-900 font-semibold",
+          "bg-[#40C4FF] text-slate-900 font-semibold",
           "shadow-sm",
           // interaction
-          "hover:bg-sky-400 active:bg-sky-600",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900",
+          "hover:bg-[#69d0ff] active:bg-[#29b6f6]",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#40C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900",
           "disabled:opacity-60 disabled:cursor-not-allowed",
           className ?? "",
         ].join(" ")}
