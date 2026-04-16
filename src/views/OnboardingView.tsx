@@ -40,7 +40,7 @@ function OnboardingView() {
       });
       
       if (res.ok) {
-        navigate("/home");
+        navigate("/");
       } else {
         const data = await res.json();
         setError(data.error ?? "Something went wrong.");

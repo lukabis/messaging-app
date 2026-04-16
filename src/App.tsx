@@ -1,9 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import LoginView from "./views/LoginView";
 import OnboardingView from "./views/OnboardingView";
-import HomeView from "./views/HomeView";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RootRoute from "./components/RootRoute";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -17,10 +16,9 @@ function AnimatedRoutes() {
         transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <Routes location={location}>
-          <Route path="/" element={<LoginView />} />
+          <Route path="/" element={<RootRoute />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/onboarding" element={<OnboardingView />} />
-            <Route path="/home" element={<HomeView />} />
           </Route>
         </Routes>
       </motion.div>
