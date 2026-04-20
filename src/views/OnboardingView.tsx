@@ -17,10 +17,12 @@ function OnboardingView() {
   const navigate = useNavigate();
 
   const isValid = firstName.trim() !== "" && lastName.trim() !== "" && username.trim() !== "";
+  const fileRef = useRef<File | null>(null);
 
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    fileRef.current = file;
     setAvatarUrl(URL.createObjectURL(file));
   }
 
@@ -32,13 +34,17 @@ function OnboardingView() {
 
     try {
       const token = await getAccessTokenSilently();
+      const body = new FormData();
+      body.append("firstName", firstName);
+      body.append("lastName", lastName);
+      body.append("username", username);
+      body.append("onboarded", "true");
+      if (fileRef.current) body.append("profileImage", fileRef.current);
+
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ firstName, lastName, username, onboarded: true }),
+        headers: { Authorization: `Bearer ${token}` },
+        body,
       });
       
       if (res.ok) {
