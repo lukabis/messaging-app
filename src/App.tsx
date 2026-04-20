@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import OnboardingView from "./views/OnboardingView";
 import ProtectedRoute from "./components/ProtectedRoute";
+import OnboardingGuard from "./components/OnboardingGuard";
 import RootRoute from "./components/RootRoute";
+import { UserProvider } from "./context/UserContext";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -18,7 +20,9 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<RootRoute />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/onboarding" element={<OnboardingView />} />
+            <Route element={<OnboardingGuard />}>
+              <Route path="/onboarding" element={<OnboardingView />} />
+            </Route>
           </Route>
         </Routes>
       </motion.div>
@@ -29,9 +33,11 @@ function AnimatedRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <div className="max-w-7xl mx-auto bg-[#292929] rounded-none lg:rounded-xl">
-        <AnimatedRoutes />
-      </div>
+      <UserProvider>
+        <div className="max-w-7xl mx-auto bg-[#292929] rounded-none lg:rounded-xl">
+          <AnimatedRoutes />
+        </div>
+      </UserProvider>
     </BrowserRouter>
   );
 }

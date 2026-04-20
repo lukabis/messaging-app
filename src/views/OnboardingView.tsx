@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 function OnboardingView() {
   const [firstName, setFirstName] = useState("");
@@ -12,6 +13,7 @@ function OnboardingView() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { getAccessTokenSilently } = useAuth0();
+  const { setOnboarded } = useUser();
   const navigate = useNavigate();
 
   const isValid = firstName.trim() !== "" && lastName.trim() !== "" && username.trim() !== "";
@@ -40,6 +42,7 @@ function OnboardingView() {
       });
       
       if (res.ok) {
+        setOnboarded(true);
         navigate("/");
       } else {
         const data = await res.json();
