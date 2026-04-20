@@ -15,12 +15,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isAuthenticated) return;
     const fetchUser = async () => {
-      const token = await getAccessTokenSilently();
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setOnboarded(data.onboarded);
+      try {
+        const token = await getAccessTokenSilently();
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          // TODO: make better error handling
+          console.error("Failed to fetch user", res.status);
+          return;
+        }
+        const data = await res.json();
+        setOnboarded(data.onboarded);
+      } catch (error) {
+        // TODO: make better error handling
+        console.error("Failed to fetch user data", error);
+      }
     };
     fetchUser();
   }, [isAuthenticated]);
