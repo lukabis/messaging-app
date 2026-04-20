@@ -1,10 +1,12 @@
-function GoogleGIcon({ className }: { className?: string }) {
+import React from "react";
+
+function GoogleGIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
-      className={className}
       viewBox="0 0 48 48"
       aria-hidden="true"
       focusable="false"
+      {...props}
     >
       <path
         fill="#FFC107"
