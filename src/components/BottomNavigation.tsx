@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function ChatIcon({ active }: { active?: boolean }) {
@@ -52,10 +53,15 @@ function LogoutIcon() {
 function BottomNavigation() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const { logout } = useAuth0();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
+
+  const tabClass = (active: boolean) =>
+    `flex flex-col items-center gap-1 px-4 transition-colors ${active ? "text-blue-500" : "text-gray-500 hover:text-gray-300"}`;
 
   return (
     <>
@@ -64,15 +70,15 @@ function BottomNavigation() {
       )}
 
       <nav className="bg-[#292929] border-t border-[#3a3a3a] flex items-center justify-around px-2 py-3 relative">
-        <button className="flex flex-col items-center gap-1 px-4 transition-colors text-blue-500">
-          <ChatIcon active />
+        <button onClick={() => navigate("/")} className={tabClass(pathname === "/")}>
+          <ChatIcon active={pathname === "/"} />
           <span className="text-xs font-medium">Chats</span>
         </button>
-        <button className="flex flex-col items-center gap-1 px-4 transition-colors text-gray-500 hover:text-gray-300">
+        <button className={tabClass(false)}>
           <GroupsIcon />
           <span className="text-xs font-medium">Groups</span>
         </button>
-        <button className="flex flex-col items-center gap-1 px-4 transition-colors text-gray-500 hover:text-gray-300">
+        <button onClick={() => navigate("/profile")} className={tabClass(pathname === "/profile")}>
           <ProfileIcon />
           <span className="text-xs font-medium">Profile</span>
         </button>
