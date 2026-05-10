@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import OnboardingView from "./views/OnboardingView";
 import ProfileView from "./views/ProfileView";
+import AddFriendView from "./views/AddFriendView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import OnboardingGuard from "./components/OnboardingGuard";
 import RootRoute from "./components/RootRoute";
@@ -25,6 +26,7 @@ function AnimatedRoutes() {
               <Route path="/onboarding" element={<OnboardingView />} />
             </Route>
             <Route path="/profile" element={<ProfileView />} />
+            <Route path="/add-friend" element={<AddFriendView />} />
           </Route>
         </Routes>
       </motion.div>

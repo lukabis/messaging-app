@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 function SearchIcon() {
@@ -51,6 +52,7 @@ function GroupIcon() {
 }
 
 function AppHeader() {
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [addMenuOpen, setAddMenuOpen] = useState(false);
 
@@ -110,7 +112,7 @@ function AppHeader() {
         <>
           <div className="fixed inset-0 z-10" onClick={() => setAddMenuOpen(false)} />
           <div className="absolute right-4 top-14 bg-[#1a2a3e] rounded-xl shadow-lg overflow-hidden z-20 border border-[#2a3a4e] min-w-40">
-            <button className="flex items-center gap-3 w-full px-4 py-3 text-white text-sm hover:bg-[#2a3a4e] transition-colors">
+            <button onClick={() => navigate("/add-friend")} className="flex items-center gap-3 w-full px-4 py-3 text-white text-sm hover:bg-[#2a3a4e] transition-colors">
               <PersonAddIcon />
               Add Friend
             </button>
