@@ -1,23 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
-type User = {
+const SEARCH_DEBOUNCE_MS = 200;
+
+type SearchUser = {
   id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
   profileImage: string | null;
-  avatarColor: string;
+  relationship: string;
 };
-
-const USERS: User[] = [
-  { id: "1", username: "david_wayne", firstName: "David", lastName: "Wayne", profileImage: null, avatarColor: "bg-purple-600" },
-  { id: "2", username: "edward_mint", firstName: "Edward", lastName: "Mint", profileImage: null, avatarColor: "bg-green-600" },
-  { id: "3", username: "may_kang", firstName: "May", lastName: "Kang", profileImage: null, avatarColor: "bg-pink-600" },
-  { id: "4", username: "lily_dare", firstName: "Lily", lastName: "Dare", profileImage: null, avatarColor: "bg-yellow-600" },
-  { id: "5", username: "dennis_dang", firstName: "Dennis", lastName: "Dang", profileImage: null, avatarColor: "bg-orange-600" },
-  { id: "6", username: "cayla_raiji", firstName: "Cayla", lastName: "Raiji", profileImage: null, avatarColor: "bg-teal-600" },
-];
 
 function BackIcon() {
   return (
@@ -48,6 +42,42 @@ function PersonAddIcon() {
   );
 }
 
+function PersonCheckIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <polyline points="16 11 18 13 22 9" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 gap-4 py-20 text-[#3a4a5e]">
@@ -63,45 +93,118 @@ function EmptyState() {
   );
 }
 
-function UserRow({ user }: { user: User }) {
-  const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+/*
+  When user has no profile image, this function ensures that same user id
+  matches the same color every time
+*/
+function avatarColor(id: string): string {
+  const colors = [
+    "bg-purple-600",
+    "bg-green-600",
+    "bg-pink-600",
+    "bg-yellow-600",
+    "bg-orange-600",
+    "bg-teal-600",
+    "bg-blue-600",
+    "bg-red-600"
+  ];
+
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return colors[hash % colors.length];
+}
+
+function UserRow({ user }: { user: SearchUser }) {
+  const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "?";
+  const color = avatarColor(user.id);
 
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <div className={`w-12 h-12 rounded-full ${user.avatarColor} flex items-center justify-center flex-shrink-0`}>
+      <div className={`w-12 h-12 rounded-full ${color} flex items-center justify-center flex-shrink-0`}>
         {user.profileImage ? (
-          <img src={user.profileImage} alt={user.username} className="w-full h-full rounded-full object-cover" />
+          <img
+            src={`${import.meta.env.VITE_API_BASE_URL}${user.profileImage}`}
+            alt={user.username ?? ""}
+            className="w-full h-full rounded-full object-cover"
+          />
         ) : (
           <span className="text-white font-semibold text-sm">{initials}</span>
         )}
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-white font-semibold text-sm truncate">{user.username}</p>
+        <p className="text-white font-semibold text-sm truncate">{user.username ?? "—"}</p>
         <p className="text-gray-400 text-xs truncate">{user.firstName} {user.lastName}</p>
       </div>
 
-      <button
-        className="w-9 h-9 rounded-full bg-[#3a4a5e] flex items-center justify-center text-gray-300 hover:bg-[#4a5a6e] transition-colors flex-shrink-0"
-        aria-label={`Add ${user.username} as friend`}
-      >
-        <PersonAddIcon />
-      </button>
+      {user.relationship === "pending_received" ? (
+        <div className="flex gap-2 flex-shrink-0">
+          <button
+            className="w-9 h-9 rounded-full bg-[#2bc267] flex items-center justify-center text-white hover:bg-green-600 transition-colors"
+            aria-label="Accept friend request"
+          >
+            <CheckIcon />
+          </button>
+          <button
+            className="w-9 h-9 rounded-full bg-[#f6695e] flex items-center justify-center text-white hover:bg-red-700 transition-colors"
+            aria-label="Decline friend request"
+          >
+            <XIcon />
+          </button>
+        </div>
+      ) : (
+        <button
+          className={[
+            "w-9 h-9 rounded-full flex items-center justify-center transition-colors flex-shrink-0",
+            user.relationship === "friends"
+              ? "bg-[#33d375] text-white hover:bg-[#2bc267]"
+              : "bg-[#3a4a5e] text-gray-300 hover:bg-[#4a5a6e]",
+          ].join(" ")}
+          aria-label={`Add ${user.username} as friend`}
+        >
+          {user.relationship === "friends" && <PersonCheckIcon />}
+          {user.relationship === "pending_sent" && <ClockIcon />}
+          {user.relationship === "not_friends" && <PersonAddIcon />}
+        </button>
+      )}
     </div>
   );
 }
 
 function AddFriendView() {
   const navigate = useNavigate();
+  const { getAccessTokenSilently } = useAuth0();
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchUser[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = query.trim()
-    ? USERS.filter((u) =>
-        u.username.toLowerCase().includes(query.toLowerCase()) ||
-        u.firstName.toLowerCase().includes(query.toLowerCase()) ||
-        u.lastName.toLowerCase().includes(query.toLowerCase())
-      )
-    : USERS;
+  useEffect(() => {
+    if (query.length <= 2) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const token = await getAccessTokenSilently();
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/api/friends/search?q=${encodeURIComponent(query)}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = await res.json();
+        setResults(data);
+      } catch {
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const showEmpty = !loading && results.length === 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#292929]">
@@ -134,10 +237,14 @@ function AddFriendView() {
       </div>
 
       <main className="flex-1 flex flex-col">
-        {filtered.length > 0 ? (
-          filtered.map((user) => <UserRow key={user.id} user={user} />)
-        ) : (
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-gray-500 text-sm">Searching...</p>
+          </div>
+        ) : showEmpty ? (
           <EmptyState />
+        ) : (
+          results.map((user) => <UserRow key={user.id} user={user} />)
         )}
       </main>
     </div>

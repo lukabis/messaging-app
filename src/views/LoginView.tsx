@@ -11,7 +11,10 @@ function LoginView() {
       <img src={logo} alt="Logo" className='mx-auto mt-8' />
       <ChatRound />
 
-      <GoogleSignInButton onClick={() => loginWithRedirect({ authorizationParams: { connection: "google-oauth2" } })} />
+      {/* <GoogleSignInButton onClick={() => loginWithRedirect({ authorizationParams: { connection: "google-oauth2" } })} /> */}
+
+      {/* todo: remove this, it's for testing purposes, so that fake users from auth0 can login */}
+      <GoogleSignInButton onClick={() => loginWithRedirect()} />
     </div>
   );
 }
