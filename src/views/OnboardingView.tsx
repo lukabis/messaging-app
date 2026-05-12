@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../context/useUser";
 
 function OnboardingView() {
   const [firstName, setFirstName] = useState("");

@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../context/useUser";
 import LoginView from "../views/LoginView";
 import HomeView from "../views/HomeView";
 

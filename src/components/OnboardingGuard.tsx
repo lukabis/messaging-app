@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../context/useUser";
 
 export default function OnboardingGuard() {
   const { onboarded } = useUser();

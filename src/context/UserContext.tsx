@@ -1,12 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-
-interface UserContextValue {
-  onboarded: boolean | null;
-  setOnboarded: (value: boolean) => void;
-}
-
-const UserContext = createContext<UserContextValue>({ onboarded: null, setOnboarded: () => {} });
+import { UserContext } from "./useUser";
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -38,4 +32,3 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   return <UserContext.Provider value={{ onboarded, setOnboarded }}>{children}</UserContext.Provider>;
 }
 
-export const useUser = () => useContext(UserContext);
