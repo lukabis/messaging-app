@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import {
+  BackIcon,
+  CheckIcon,
+  ClockIcon,
+  PersonAddIcon,
+  PersonCheckIcon,
+  SearchIcon,
+  SpinnerIcon,
+  XIcon } from "../components/svg-icons/AddFriendIcons";
 
 const SEARCH_DEBOUNCE_MS = 200;
 
@@ -12,71 +21,6 @@ type SearchUser = {
   profileImage: string | null;
   relationship: string;
 };
-
-function BackIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="19" y1="12" x2="5" y2="12" />
-      <polyline points="12 19 5 12 12 5" />
-    </svg>
-  );
-}
-
-function SearchIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-
-function PersonAddIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <line x1="19" y1="8" x2="19" y2="14" />
-      <line x1="22" y1="11" x2="16" y2="11" />
-    </svg>
-  );
-}
-
-function PersonCheckIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <polyline points="16 11 18 13 22 9" />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
 
 function EmptyState() {
   return (
@@ -114,7 +58,8 @@ function avatarColor(id: string): string {
   return colors[hash % colors.length];
 }
 
-function UserRow({ user }: { user: SearchUser }) {
+function UserRow({ user, onAddFriend }: { user: SearchUser; onAddFriend: (userId: string) => Promise<void> }) {
+  const [sending, setSending] = useState(false);
   const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "?";
   const color = avatarColor(user.id);
 
@@ -161,10 +106,18 @@ function UserRow({ user }: { user: SearchUser }) {
               : "bg-[#3a4a5e] text-gray-300 hover:bg-[#4a5a6e]",
           ].join(" ")}
           aria-label={`Add ${user.username} as friend`}
+          disabled={sending}
+          onClick={async () => {
+            if (user.relationship !== "not_friends") return;
+            setSending(true);
+            await onAddFriend(user.id);
+            setSending(false);
+          }}
         >
-          {user.relationship === "friends" && <PersonCheckIcon />}
-          {user.relationship === "pending_sent" && <ClockIcon />}
-          {user.relationship === "not_friends" && <PersonAddIcon />}
+          {sending && <SpinnerIcon />}
+          {!sending && user.relationship === "friends" && <PersonCheckIcon />}
+          {!sending && user.relationship === "pending_sent" && <ClockIcon />}
+          {!sending && user.relationship === "not_friends" && <PersonAddIcon />}
         </button>
       )}
     </div>
@@ -206,6 +159,18 @@ function AddFriendView() {
 
   const showEmpty = !loading && results.length === 0;
 
+  async function handleAddFriend(toUser: string) {
+    const token = await getAccessTokenSilently();
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/friend-requests`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ toUser }),
+    });
+    setResults((prev) =>
+      prev.map((u) => (u.id === toUser ? { ...u, relationship: "pending_sent" } : u))
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-[#292929]">
       <header className="bg-[#135caf] px-4 pt-4 pb-2 relative">
@@ -244,7 +209,7 @@ function AddFriendView() {
         ) : showEmpty ? (
           <EmptyState />
         ) : (
-          results.map((user) => <UserRow key={user.id} user={user} />)
+          results.map((user) => <UserRow key={user.id} user={user} onAddFriend={handleAddFriend} />)
         )}
       </main>
     </div>
