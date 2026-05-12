@@ -58,8 +58,21 @@ function avatarColor(id: string): string {
   return colors[hash % colors.length];
 }
 
-function UserRow({ user, onAddFriend }: { user: SearchUser; onAddFriend: (userId: string) => Promise<void> }) {
+function UserRow({
+  user,
+  onAddFriend,
+  onRespondToFriendRequest,
+}: {
+  user: SearchUser;
+  onAddFriend: (userId: string) => Promise<void>;
+  onRespondToFriendRequest: (userId: string, status: "ACCEPTED" | "DECLINED") => Promise<void>;
+}) {
+  // used for sending friend request
   const [sending, setSending] = useState(false);
+
+  // used for responding to a friend request
+  const [responding, setResponding] = useState<"idle" | "accepting" | "declining">("idle");
+  
   const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "?";
   const color = avatarColor(user.id);
 
@@ -85,16 +98,28 @@ function UserRow({ user, onAddFriend }: { user: SearchUser; onAddFriend: (userId
       {user.relationship === "pending_received" ? (
         <div className="flex gap-2 flex-shrink-0">
           <button
-            className="w-9 h-9 rounded-full bg-[#2bc267] flex items-center justify-center text-white hover:bg-green-600 transition-colors"
+            className="w-9 h-9 rounded-full bg-[#2bc267] flex items-center justify-center text-white hover:bg-green-600 transition-colors disabled:opacity-50"
             aria-label="Accept friend request"
+            disabled={responding !== "idle"}
+            onClick={async () => {
+              setResponding("accepting");
+              await onRespondToFriendRequest(user.id, "ACCEPTED");
+              setResponding("idle");
+            }}
           >
-            <CheckIcon />
+            {responding === "accepting" ? <SpinnerIcon /> : <CheckIcon />}
           </button>
           <button
-            className="w-9 h-9 rounded-full bg-[#f6695e] flex items-center justify-center text-white hover:bg-red-700 transition-colors"
+            className="w-9 h-9 rounded-full bg-[#f6695e] flex items-center justify-center text-white hover:bg-red-700 transition-colors disabled:opacity-50"
             aria-label="Decline friend request"
+            disabled={responding !== "idle"}
+            onClick={async () => {
+              setResponding("declining");
+              await onRespondToFriendRequest(user.id, "DECLINED");
+              setResponding("idle");
+            }}
           >
-            <XIcon />
+            {responding === "declining" ? <SpinnerIcon /> : <XIcon />}
           </button>
         </div>
       ) : (
@@ -171,6 +196,22 @@ function AddFriendView() {
     );
   }
 
+  async function handleRespondToRequest(fromUser: string, status: "ACCEPTED" | "DECLINED") {
+    const token = await getAccessTokenSilently();
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/friend-requests/${fromUser}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    setResults((prev) =>
+      prev.map((u) =>
+        u.id === fromUser
+          ? { ...u, relationship: status === "ACCEPTED" ? "friends" : "not_friends" }
+          : u
+      )
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-[#292929]">
       <header className="bg-[#135caf] px-4 pt-4 pb-2 relative">
@@ -209,7 +250,7 @@ function AddFriendView() {
         ) : showEmpty ? (
           <EmptyState />
         ) : (
-          results.map((user) => <UserRow key={user.id} user={user} onAddFriend={handleAddFriend} />)
+          results.map((user) => <UserRow key={user.id} user={user} onAddFriend={handleAddFriend} onRespondToFriendRequest={handleRespondToRequest} />)
         )}
       </main>
     </div>
