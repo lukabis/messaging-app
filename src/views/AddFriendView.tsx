@@ -61,11 +61,13 @@ function avatarColor(id: string): string {
 function UserRow({
   user,
   onAddFriend,
-  onRespondToFriendRequest,
+  onAccept,
+  onDecline,
 }: {
   user: SearchUser;
   onAddFriend: (userId: string) => Promise<void>;
-  onRespondToFriendRequest: (userId: string, status: "ACCEPTED" | "DECLINED") => Promise<void>;
+  onAccept: (userId: string) => Promise<void>;
+  onDecline: (userId: string) => Promise<void>;
 }) {
   // used for sending friend request
   const [sending, setSending] = useState(false);
@@ -103,7 +105,7 @@ function UserRow({
             disabled={responding !== "idle"}
             onClick={async () => {
               setResponding("accepting");
-              await onRespondToFriendRequest(user.id, "ACCEPTED");
+              await onAccept(user.id);
               setResponding("idle");
             }}
           >
@@ -115,7 +117,7 @@ function UserRow({
             disabled={responding !== "idle"}
             onClick={async () => {
               setResponding("declining");
-              await onRespondToFriendRequest(user.id, "DECLINED");
+              await onDecline(user.id);
               setResponding("idle");
             }}
           >
@@ -186,29 +188,40 @@ function AddFriendView() {
 
   async function handleAddFriend(toUser: string) {
     const token = await getAccessTokenSilently();
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/friend-requests`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/friend-requests`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ toUser }),
     });
+    if (res.status === 404) {
+      setResults((prev) => prev.filter((u) => u.id !== toUser));
+      return;
+    }
     setResults((prev) =>
       prev.map((u) => (u.id === toUser ? { ...u, relationship: "pending_sent" } : u))
     );
   }
 
-  async function handleRespondToRequest(fromUser: string, status: "ACCEPTED" | "DECLINED") {
+  async function handleAcceptRequest(fromUser: string) {
     const token = await getAccessTokenSilently();
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/friend-requests/${fromUser}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status: "ACCEPTED" }),
     });
     setResults((prev) =>
-      prev.map((u) =>
-        u.id === fromUser
-          ? { ...u, relationship: status === "ACCEPTED" ? "friends" : "not_friends" }
-          : u
-      )
+      prev.map((u) => (u.id === fromUser ? { ...u, relationship: "friends" } : u))
+    );
+  }
+
+  async function handleDeclineRequest(fromUser: string) {
+    const token = await getAccessTokenSilently();
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/friend-requests/${fromUser}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setResults((prev) =>
+      prev.map((u) => (u.id === fromUser ? { ...u, relationship: "not_friends" } : u))
     );
   }
 
@@ -250,7 +263,7 @@ function AddFriendView() {
         ) : showEmpty ? (
           <EmptyState />
         ) : (
-          results.map((user) => <UserRow key={user.id} user={user} onAddFriend={handleAddFriend} onRespondToFriendRequest={handleRespondToRequest} />)
+          results.map((user) => <UserRow key={user.id} user={user} onAddFriend={handleAddFriend} onAccept={handleAcceptRequest} onDecline={handleDeclineRequest} />)
         )}
       </main>
     </div>
