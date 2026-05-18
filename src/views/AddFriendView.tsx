@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
-  BackIcon,
   CheckIcon,
   ClockIcon,
   PersonAddIcon,
@@ -10,6 +8,8 @@ import {
   SearchIcon,
   SpinnerIcon,
   XIcon } from "../components/svg-icons/AddFriendIcons";
+import SubPageHeader from "../components/SubPageHeader";
+import UserAvatar from "../components/UserAvatar";
 
 const SEARCH_DEBOUNCE_MS = 200;
 
@@ -37,27 +37,6 @@ function EmptyState() {
   );
 }
 
-/*
-  When user has no profile image, this function ensures that same user id
-  matches the same color every time
-*/
-function avatarColor(id: string): string {
-  const colors = [
-    "bg-purple-600",
-    "bg-green-600",
-    "bg-pink-600",
-    "bg-yellow-600",
-    "bg-orange-600",
-    "bg-teal-600",
-    "bg-blue-600",
-    "bg-red-600"
-  ];
-
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  return colors[hash % colors.length];
-}
-
 function UserRow({
   user,
   onAddFriend,
@@ -69,28 +48,12 @@ function UserRow({
   onAccept: (userId: string) => Promise<void>;
   onDecline: (userId: string) => Promise<void>;
 }) {
-  // used for sending friend request
   const [sending, setSending] = useState(false);
-
-  // used for responding to a friend request
   const [responding, setResponding] = useState<"idle" | "accepting" | "declining">("idle");
-  
-  const initials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "?";
-  const color = avatarColor(user.id);
 
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <div className={`w-12 h-12 rounded-full ${color} flex items-center justify-center flex-shrink-0`}>
-        {user.profileImage ? (
-          <img
-            src={`${import.meta.env.VITE_API_BASE_URL}${user.profileImage}`}
-            alt={user.username ?? ""}
-            className="w-full h-full rounded-full object-cover"
-          />
-        ) : (
-          <span className="text-white font-semibold text-sm">{initials}</span>
-        )}
-      </div>
+      <UserAvatar user={user} />
 
       <div className="flex-1 min-w-0">
         <p className="text-white font-semibold text-sm truncate">{user.username ?? "—"}</p>
@@ -152,7 +115,6 @@ function UserRow({
 }
 
 function AddFriendView() {
-  const navigate = useNavigate();
   const { getAccessTokenSilently } = useAuth0();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchUser[]>([]);
@@ -227,18 +189,7 @@ function AddFriendView() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#292929]">
-      <header className="bg-[#135caf] px-4 pt-4 pb-2 relative">
-        <div className="flex items-center h-[50px]">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-            aria-label="Go back"
-          >
-            <BackIcon />
-          </button>
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-white font-medium text-[22px]">Add Friend</h1>
-        </div>
-      </header>
+      <SubPageHeader title="Add Friend" />
 
       <div className="px-4 py-3">
         <div className="flex items-center gap-2 bg-[#1a2a3e] rounded-full px-4 py-2 border border-[#2a3a4e] focus-within:border-blue-500 transition-colors">

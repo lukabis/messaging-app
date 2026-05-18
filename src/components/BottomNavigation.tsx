@@ -74,9 +74,9 @@ function BottomNavigation() {
           <ChatIcon active={pathname === "/"} />
           <span className="text-xs font-medium">Chats</span>
         </button>
-        <button className={tabClass(false)}>
+        <button onClick={() => navigate("/friends")} className={tabClass(pathname === "/friends")}>
           <GroupsIcon />
-          <span className="text-xs font-medium">Groups</span>
+          <span className="text-xs font-medium">Friends</span>
         </button>
         <button onClick={() => navigate("/profile")} className={tabClass(pathname === "/profile")}>
           <ProfileIcon />
