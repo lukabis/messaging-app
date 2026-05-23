@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { BackIcon } from "./svg-icons/AddFriendIcons";
 
-function SubPageHeader({ title }: { title: string }) {
+function SubPageHeader({ title, bgColor = "bg-[#135caf]" }: { title: string; bgColor?: string }) {
   const navigate = useNavigate();
   return (
-    <header className="bg-[#135caf] px-4 pt-4 pb-2 relative">
+    <header className={`${bgColor} px-4 pt-4 pb-2 relative`}>
       <div className="flex items-center h-[50px]">
         <button
           onClick={() => navigate(-1)}

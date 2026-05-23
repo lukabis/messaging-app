@@ -4,6 +4,7 @@ import OnboardingView from "./views/OnboardingView";
 import ProfileView from "./views/ProfileView";
 import AddFriendView from "./views/AddFriendView";
 import FriendsListView from "./views/FriendsListView";
+import ChatView from "./views/ChatView";
 import ProtectedRoute from "./components/ProtectedRoute";
 import OnboardingGuard from "./components/OnboardingGuard";
 import RootRoute from "./components/RootRoute";
@@ -29,6 +30,7 @@ function AnimatedRoutes() {
             <Route path="/profile" element={<ProfileView />} />
             <Route path="/add-friend" element={<AddFriendView />} />
             <Route path="/friends" element={<FriendsListView />} />
+            <Route path="/chat" element={<ChatView />} />
           </Route>
         </Routes>
       </motion.div>
