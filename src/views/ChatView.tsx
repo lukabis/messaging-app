@@ -1,13 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import SubPageHeader from "../components/SubPageHeader";
 import UserAvatar from "../components/UserAvatar";
 
-const contact = {
-  id: "contact-1",
-  firstName: "David",
-  lastName: "Wayne",
-  username: "davidwayne",
-  profileImage: null,
+type Contact = {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  username: string | null;
+  profileImage: string | null;
 };
 
 const messages = [
@@ -34,7 +36,28 @@ function SendIcon() {
 }
 
 function ChatView() {
+  const { friendId } = useParams<{ friendId: string }>();
+  const { getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
+  const [contact, setContact] = useState<Contact | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function fetchChat() {
+      const token = await getAccessTokenSilently();
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/messages/${friendId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.ok) {
+        navigate("/");
+        return;
+      }
+      const data = await res.json();
+      setContact(data.friend);
+    }
+    fetchChat();
+  }, [friendId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView();
@@ -44,15 +67,17 @@ function ChatView() {
     <div className="flex flex-col h-screen bg-[#292929]">
       <div className="bg-[#292929]">
         <SubPageHeader title="Message" bgColor="bg-[#292929]" />
-        <div className="flex items-center gap-3 px-4 pb-4">
-          <UserAvatar user={contact} />
-          <div>
-            <p className="text-white font-semibold text-base leading-tight">
-              {contact.firstName} {contact.lastName}
-            </p>
-            <p className="text-gray-400 text-xs">@{contact.username}</p>
+        {contact && (
+          <div className="flex items-center gap-3 px-4 pb-4">
+            <UserAvatar user={contact} />
+            <div>
+              <p className="text-white font-semibold text-base leading-tight">
+                {contact.firstName} {contact.lastName}
+              </p>
+              <p className="text-gray-400 text-xs">@{contact.username}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="bg-[#2c2d3a] flex-1 overflow-y-auto px-4 py-4 space-y-3">

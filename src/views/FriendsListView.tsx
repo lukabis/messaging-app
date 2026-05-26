@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
 import SubPageHeader from "../components/SubPageHeader";
 import UserAvatar from "../components/UserAvatar";
 import BottomNavigation from "../components/BottomNavigation";
@@ -24,6 +25,7 @@ function SectionLabel({ label }: { label: string }) {
 
 function FriendsListView() {
   const { getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingFriendRequests, setPendingFriendRequests] = useState<SearchUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ function FriendsListView() {
               <>
                 <SectionLabel label="Friends" />
                 {friends.map((friend) => (
-                  <div key={friend.id} className="flex items-center gap-3 px-4 py-3">
+                  <div key={friend.id} className="flex items-center gap-3 px-4 py-3 cursor-pointer" onClick={() => navigate(`/chat/${friend.id}`)}>
                     <UserAvatar user={friend} />
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-semibold text-sm truncate">{friend.username ?? "—"}</p>

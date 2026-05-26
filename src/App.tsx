@@ -30,7 +30,7 @@ function AnimatedRoutes() {
             <Route path="/profile" element={<ProfileView />} />
             <Route path="/add-friend" element={<AddFriendView />} />
             <Route path="/friends" element={<FriendsListView />} />
-            <Route path="/chat" element={<ChatView />} />
+            <Route path="/chat/:friendId" element={<ChatView />} />
           </Route>
         </Routes>
       </motion.div>
