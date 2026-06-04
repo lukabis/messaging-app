@@ -35,7 +35,18 @@ function ChatView() {
   const [contact, setContact] = useState<Contact | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
+  const [viewportHeight, setViewportHeight] = useState(
+    () => window.visualViewport?.height ?? window.innerHeight
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function update() {
+      setViewportHeight(window.visualViewport?.height ?? window.innerHeight);
+    }
+    window.visualViewport?.addEventListener("resize", update);
+    return () => window.visualViewport?.removeEventListener("resize", update);
+  }, []);
 
   async function sendMessage() {
     if (!inputText.trim()) return;
@@ -77,7 +88,7 @@ function ChatView() {
   });
 
   return (
-    <div className="flex flex-col h-dvh bg-[#292929]">
+    <div className="flex flex-col bg-[#292929]" style={{ height: viewportHeight }}>
       <div className="bg-[#292929]">
         <SubPageHeader title="Message" bgColor="bg-[#292929]" />
         {contact && (
