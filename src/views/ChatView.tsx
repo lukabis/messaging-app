@@ -34,7 +34,25 @@ function ChatView() {
   const navigate = useNavigate();
   const [contact, setContact] = useState<Contact | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  async function sendMessage() {
+    if (!inputText.trim()) return;
+    const token = await getAccessTokenSilently();
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/api/messages/${friendId}`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ text: inputText }),
+      }
+    );
+    if (!res.ok) return;
+    const message: Message = await res.json();
+    setMessages((prev) => [...prev, message]);
+    setInputText("");
+  }
 
   useEffect(() => {
     async function fetchChat() {
@@ -103,9 +121,15 @@ function ChatView() {
         <input
           type="text"
           placeholder="Type a message..."
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
           className="flex-1 bg-[#545454] text-white placeholder-gray-500 text-sm rounded-full px-4 py-2.5 outline-none"
         />
-        <button className="w-10 h-10 rounded-full bg-[#4a9eff] flex items-center justify-center text-white flex-shrink-0 hover:bg-[#3a8eef] transition-colors">
+        <button
+          onClick={sendMessage}
+          disabled={!inputText.trim()}
+          className={`w-10 h-10 rounded-full bg-[#4a9eff] flex items-center justify-center text-white flex-shrink-0 transition-colors ${!inputText.trim() ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3a8eef]"}`}
+        >
           <SendIcon />
         </button>
       </div>
