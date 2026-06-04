@@ -88,7 +88,7 @@ function ChatView() {
   });
 
   return (
-    <div className="flex flex-col bg-[#292929]" style={{ height: viewportHeight }}>
+    <div className="flex flex-col bg-[#292929]" style={{ position: "fixed", top: 0, left: 0, right: 0, height: viewportHeight }}>
       <div className="bg-[#292929]">
         <SubPageHeader title="Message" bgColor="bg-[#292929]" />
         {contact && (
