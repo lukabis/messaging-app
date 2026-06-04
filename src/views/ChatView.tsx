@@ -61,7 +61,7 @@ function ChatView() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView();
-  }, []);
+  });
 
   return (
     <div className="flex flex-col h-screen bg-[#292929]">
