@@ -77,7 +77,7 @@ function ChatView() {
   });
 
   return (
-    <div className="flex flex-col h-screen bg-[#292929]">
+    <div className="flex flex-col h-dvh bg-[#292929]">
       <div className="bg-[#292929]">
         <SubPageHeader title="Message" bgColor="bg-[#292929]" />
         {contact && (
