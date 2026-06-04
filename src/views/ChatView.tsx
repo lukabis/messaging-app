@@ -12,20 +12,13 @@ type Contact = {
   profileImage: string | null;
 };
 
-const messages = [
-  { id: 1, text: "Hey! Long time no see 👋", sent: false, time: "10:00" },
-  { id: 2, text: "Hey David! Yeah it's been a while. How are you?", sent: true, time: "10:01" },
-  { id: 3, text: "I'm doing well, thanks! Just been busy with work.", sent: false, time: "10:02" },
-  { id: 4, text: "Same here honestly. What have you been up to?", sent: true, time: "10:03" },
-  { id: 5, text: "Speedy Chow. I'm just around the corner from your place. 😊", sent: false, time: "10:08" },
-  { id: 6, text: "Hi!", sent: true, time: "10:10" },
-  { id: 7, text: "Awesome, thanks for letting me know! Can't wait for my delivery. 📦", sent: false, time: "10:11" },
-  { id: 8, text: "No problem at all! I'll be there in about 15 minutes.", sent: true, time: "10:11" },
-  { id: 9, text: "I'll text you when I arrive.", sent: true, time: "10:12" },
-  { id: 10, text: "Sounds good! I'll be waiting.", sent: false, time: "10:13" },
-  { id: 11, text: "Great! 😊", sent: true, time: "10:12" },
-  { id: 12, text: "See you soon!", sent: false, time: "10:14" },
-];
+type Message = {
+  id: number;
+  fromUserId: string;
+  toUserId: string;
+  text: string;
+  createdAt: string;
+};
 
 function SendIcon() {
   return (
@@ -37,9 +30,10 @@ function SendIcon() {
 
 function ChatView() {
   const { friendId } = useParams<{ friendId: string }>();
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
   const [contact, setContact] = useState<Contact | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,6 +49,7 @@ function ChatView() {
       }
       const data = await res.json();
       setContact(data.friend);
+      setMessages(data.messages);
     }
     fetchChat();
   }, [friendId]);
@@ -81,22 +76,26 @@ function ChatView() {
       </div>
 
       <div className="bg-[#2c2d3a] flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.sent ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[72%] px-4 py-2 rounded-2xl ${
-                msg.sent
-                  ? "bg-[#4a9eff] rounded-br-sm"
-                  : "bg-[#1a2a3e] rounded-bl-sm"
-              }`}
-            >
-              <p className="text-white text-sm leading-relaxed">{msg.text}</p>
-              <p className={`text-xs mt-1 ${msg.sent ? "text-white/60" : "text-gray-500"} text-right`}>
-                {msg.time}
-              </p>
+        {messages.map((msg) => {
+          const sent = msg.fromUserId === user?.sub;
+          const time = new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          return (
+            <div key={msg.id} className={`flex ${sent ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[72%] px-4 py-2 rounded-2xl ${
+                  sent
+                    ? "bg-[#4a9eff] rounded-br-sm"
+                    : "bg-[#1a2a3e] rounded-bl-sm"
+                }`}
+              >
+                <p className="text-white text-sm leading-relaxed">{msg.text}</p>
+                <p className={`text-xs mt-1 ${sent ? "text-white/60" : "text-gray-500"} text-right`}>
+                  {time}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
