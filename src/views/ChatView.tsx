@@ -73,6 +73,25 @@ function ChatView() {
   }, [friendId]);
 
   useEffect(() => {
+    let ws: WebSocket;
+
+    async function connect() {
+      const token = await getAccessTokenSilently();
+      const wsBase = import.meta.env.VITE_API_BASE_URL.replace(/^http/, "ws");
+      ws = new WebSocket(`${wsBase}?token=${token}`);
+
+      ws.onmessage = (event) => {
+        const message: Message = JSON.parse(event.data);
+        setMessages((prev) => [...prev, message]);
+      };
+    }
+
+    connect();
+
+    return () => ws?.close();
+  }, [friendId]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView();
   });
 
