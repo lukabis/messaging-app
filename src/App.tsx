@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import OnboardingGuard from "./components/OnboardingGuard";
 import RootRoute from "./components/RootRoute";
 import { UserProvider } from "./context/UserContext";
+import InstallPrompt from "./components/InstallPrompt";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -45,6 +46,7 @@ function App() {
         <div className="max-w-7xl mx-auto bg-[#292929] rounded-none lg:rounded-xl">
           <AnimatedRoutes />
         </div>
+        <InstallPrompt />
       </UserProvider>
     </BrowserRouter>
   );
