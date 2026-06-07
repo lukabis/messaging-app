@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# Messaging App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7.2-646CFF?logo=vite&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-enabled-5A0FC8?logo=pwa&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-Currently, two official plugins are available:
+A real-time messaging app with Google one-tap authentication, instant message delivery via WebSockets, and full PWA support — installable on desktop and mobile across all platforms.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Live demo:** [thechatapplication.netlify.app](https://thechatapplication.netlify.app/)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Google one-tap sign-in via Auth0
+- Real-time messaging with WebSockets
+- Friend system
+- Installable as a PWA on any platform
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+| | |
+|---|---|
+| Framework | React 19.2 + TypeScript |
+| Build tool | Vite 7.2 |
+| Styling | Tailwind CSS |
+| Auth | Auth0 (Google) |
+| Real-time | WebSockets |
+| PWA | vite-plugin-pwa |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### Prerequisites
+
+- Node.js `23.4.0` (use `.nvmrc` with [nvm](https://github.com/nvm-sh/nvm): `nvm use`)
+
+### Install
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Auth0 Setup
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+Create a **Single Page Application** in the [Auth0 dashboard](https://manage.auth0.com/) and enable Google as a social connection. You'll need the domain, client ID, and audience from there.
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### Environment Variables
+
+Create a `.env.local` file in the project root:
+
+```env
+VITE_API_BASE_URL=        # Backend base URL
+VITE_AUTH0_DOMAIN=        # From Auth0 dashboard
+VITE_AUTH0_CLIENT_ID=     # From Auth0 dashboard
+VITE_AUTH0_AUDIENCE=      # From Auth0 API settings
 ```
+
+### Run
+
+```bash
+npm run dev
+```
+
+## Backend
+
+The API is a separate repository: [lukabis/messaging-api](https://github.com/lukabis/messaging-api)
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
