@@ -20,7 +20,7 @@ export default defineConfig({
         name: "Chat App",
         short_name: "Chat",
         description: "Social messaging app",
-        theme_color: "#ffffff",
+        theme_color: "#292929",
         background_color: "#ffffff",
         display: "standalone",
         start_url: "/",
