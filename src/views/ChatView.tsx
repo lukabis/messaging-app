@@ -74,9 +74,11 @@ function ChatView() {
 
   useEffect(() => {
     let ws: WebSocket;
+    let cancelled = false;
 
     async function connect() {
       const token = await getAccessTokenSilently();
+      if (cancelled) return;
       const wsBase = import.meta.env.VITE_API_BASE_URL.replace(/^http/, "ws");
       ws = new WebSocket(`${wsBase}?token=${token}`);
 
@@ -88,7 +90,10 @@ function ChatView() {
 
     connect();
 
-    return () => ws?.close();
+    return () => {
+      cancelled = true;
+      ws?.close();
+    };
   }, [friendId]);
 
   useEffect(() => {
