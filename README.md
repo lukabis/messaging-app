@@ -6,7 +6,7 @@
 ![PWA](https://img.shields.io/badge/PWA-enabled-5A0FC8?logo=pwa&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A real-time messaging app with Google one-tap authentication, instant message delivery via WebSockets, and full PWA support — installable on desktop and mobile across all platforms.
+A real-time messaging app with Google one-tap authentication, instant message delivery via WebSockets, and full PWA support - installable on desktop and mobile across all platforms.
 
 **Live demo:** [thechatapplication.netlify.app](https://thechatapplication.netlify.app/)
 
@@ -66,6 +66,10 @@ npm run dev
 ## Backend
 
 The API is a separate repository: [lukabis/messaging-api](https://github.com/lukabis/messaging-api)
+
+## Design
+
+UI based on the [E-Chat UI Kit](https://www.figma.com/design/24QlD37wvNsEsnz2fn0kSL/Chatting-App-UI-Kit-Design-%7C-E-Chat-%7C-Figma--Community-?node-id=21-122&p=f) (Figma Community).
 
 ## License
 
