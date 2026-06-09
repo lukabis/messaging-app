@@ -6,15 +6,21 @@ import { useAuth0 } from "@auth0/auth0-react";
 function LoginView() {
   const { loginWithRedirect } = useAuth0();
 
+  {/*   
+    Controls which identity provider to use. Set VITE_AUTH0_CONNECTION to "google-oauth2" to skip
+    the Auth0 login page and go straight to Google. Leave unset to show the
+    Auth0 Universal Login page (useful for test users in dev).
+  */}
+  const connection = import.meta.env.VITE_AUTH0_CONNECTION;
+
   return (
     <div className="flex flex-col items-center min-h-screen">
       <img src={logo} alt="Logo" className='mx-auto mt-8' />
       <ChatRound />
 
-      {/* <GoogleSignInButton onClick={() => loginWithRedirect({ authorizationParams: { connection: "google-oauth2" } })} /> */}
-
-      {/* todo: remove this, it's for testing purposes, so that fake users from auth0 can login */}
-      <GoogleSignInButton onClick={() => loginWithRedirect()} />
+      <GoogleSignInButton onClick={() => {
+        loginWithRedirect(connection ? { authorizationParams: { connection } } : {});
+      }} />
     </div>
   );
 }
