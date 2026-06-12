@@ -147,7 +147,7 @@ function ChatView() {
           placeholder="Type a message..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          className="flex-1 bg-[#545454] text-white placeholder-gray-500 text-sm rounded-full px-4 py-2.5 outline-none"
+          className="flex-1 bg-[#545454] text-white placeholder-gray-500 text-base md:text-sm rounded-full px-4 py-2.5 outline-none"
         />
         <button
           onClick={sendMessage}

@@ -102,7 +102,7 @@ function AppHeader() {
             type="text"
             placeholder="Search..."
             autoFocus
-            className="w-full bg-[#1a2a3e] text-white placeholder-gray-400 rounded-full px-4 py-2 text-sm outline-none border border-[#2a3a4e] focus:border-blue-500 transition-colors"
+            className="w-full bg-[#1a2a3e] text-white placeholder-gray-400 rounded-full px-4 py-2 text-base md:text-sm outline-none border border-[#2a3a4e] focus:border-blue-500 transition-colors"
           />
         </div>
       )}

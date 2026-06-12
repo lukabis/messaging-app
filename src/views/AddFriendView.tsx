@@ -109,7 +109,7 @@ function AddFriendView() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name or username..."
-            className="flex-1 bg-transparent text-white placeholder-gray-400 text-sm outline-none"
+            className="flex-1 bg-transparent text-white placeholder-gray-400 text-base md:text-sm outline-none"
           />
         </div>
       </div>
