@@ -98,7 +98,7 @@ function OnboardingView() {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp,image/gif"
           className="hidden"
           onChange={handleAvatarChange}
           aria-hidden="true"

@@ -92,12 +92,8 @@ function ProfileView() {
         const data = await res.json();
         setError(data.error ?? "Something went wrong.");
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(`${err.name}: ${err.message}`);
-      } else {
-        setError(`Error: ${JSON.stringify(err)}`);
-      }
+    } catch {
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -140,7 +136,7 @@ function ProfileView() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 className="hidden"
                 onChange={handleAvatarChange}
                 aria-hidden="true"
