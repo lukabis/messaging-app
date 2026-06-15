@@ -92,8 +92,12 @@ function ProfileView() {
         const data = await res.json();
         setError(data.error ?? "Something went wrong.");
       }
-    } catch {
-      setError("Network error. Please try again.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(`Error: ${err.message}`);
+      } else {
+        setError("Network error. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
