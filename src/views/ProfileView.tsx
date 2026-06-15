@@ -94,9 +94,9 @@ function ProfileView() {
       }
     } catch (err) {
       if (err instanceof Error) {
-        setError(`Error: ${err.message}`);
+        setError(`${err.name}: ${err.message}`);
       } else {
-        setError("Network error. Please try again.");
+        setError(`Error: ${JSON.stringify(err)}`);
       }
     } finally {
       setLoading(false);
