@@ -8,8 +8,6 @@
 
 A real-time messaging app with Google one-tap authentication, instant message delivery via WebSockets, and full PWA support - installable on desktop and mobile across all platforms.
 
-**Live demo:** [thechatapplication.netlify.app](https://thechatapplication.netlify.app/)
-
 ---
 
 ## Features
